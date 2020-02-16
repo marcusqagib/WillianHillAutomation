@@ -18,7 +18,7 @@ its features along with Selenium Webdriver.
 
 *************************************************
 
-1. First I would like to explain how Python Unittest Framework works.
+First I would like to explain how Python Unittest Framework works.
 Python Unittest library inherits its root from a third-party module known as PyUnit.
 
 Like the JUnit, Python Unittest module splits up its functionality among five key components. All five elements work in tandem to 
@@ -68,7 +68,7 @@ https://github.com/mozilla/geckodriver/releases
 In addition to the test handler, we can also add routines like setup() and tearDown() to manage the creation and disposition of any objects 
 or conditions that are mandatory for a test.
 
-
+****************************************************************************************
 
 I using SetUp() Method To Manage Test Pre-Requisites
 These are pre-requisites which may include the following test setup preparation tasks.
