@@ -6,7 +6,6 @@ Web Applicatoin Testing with Selenium WebDriver
 *************************************************
 Before I start with my test automation, I need to prepare a set of test cases for the features 
 that are active in the Web application https://sports.williamhill.com/betting/en-gb. 
-
 These can be cases meant for acceptance criteria or part of the functional testing.
 
 Then, for automation, I will need an automation framework that could facilitate test management capabilities like 
@@ -65,8 +64,7 @@ needs to be in PATH.
 https://github.com/mozilla/geckodriver/releases
 
  
-In addition to the test handler, we can also add routines like setup() and tearDown() to manage the creation and disposition of any objects 
-or conditions that are mandatory for a test.
+In addition to the test handler, I can also add routines like setup() and tearDown() to manage the creation and disposition of any objects or conditions that are mandatory for a test.
 
 ****************************************************************************************
 
@@ -87,7 +85,7 @@ the main page of the application before executing the actual test.
 After creating a setup() method, I can now write some tests to verify
 the application’s functionality. 
 
-In this testing, I will verify the whether the Pop appear.
+In this testing, I will verify the whether the Cookies noitice pop-up.
 
 Similar to the <setup()> method, test methods get implemented in the 
 TestCase class. 
