@@ -2,7 +2,7 @@
 Scenario_01
 
 *************************************************
-Web Applicatoin Testing with Selenium WebDriver
+Web Application Testing With Selenium WebDriver
 *************************************************
 Before I start with my test automation, I need to prepare a set of test cases for the features 
 that are active in the Web application https://sports.williamhill.com/betting/en-gb. 
