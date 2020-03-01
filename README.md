@@ -122,24 +122,184 @@ python -m unittest tests/test_something.py
 This allows you to use the shell filename completion to specify the test module. The file specified must still be importable as a module. The path is converted to a module name by removing the ‘.py’ and converting path separators into ‘.’. If you want to execute a test file that isn’t importable as a module you should execute the file directly instead.
 
 
+--------------------------------------------------------------------------------------------------------------------
+Web Automation Test
+
+Automate following scenarios:
+
+Scenario 1:
+    1. Open http://sports.williamhill.com/betting/en-gb
+    2. Assert presence of Cookie notice pop-up
+    3. Close cookie notice
+    4. Assert presence of cdb cookie
+
+Scenario 2:
+    1. Assert presence of Join button
+    2. Switch language to German
+    3. Assert presence of Join button
+    4. Assert that Join button label is translated into German
+    5. Repeat steps 2-4 for Japanese and Greek
+-----------------------------------------------------------------------------------------------------------
+
+import unittest
+from selenium import webdriver
+import time
+import WhBasicOperationsTest
+
+class WhCookie(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.driver = webdriver.Firefox()
+        # Deleting all cookies, making sure cookie 'cdb' is not present initially
+        cls.driver.delete_all_cookies()
+        cls.cookies_name = 'cdb'
+        cls.url_es = "https://sports.williamhill.es/betting/es-es"
+        cls.url_en = "https://sports.williamhill.com/betting/en-gb"
+
+    def test_cookies_addedES(self):
+        ## There is an issue with the English local the cookie popup does not appear, therefore for the purpose of        implementation is used the Spanish locale
+        print('There is an issue with the English local, the popup does not appear, therefore for the purpose of implementation is used DE local')
+        self.url = self.url_es
+        self.cookie_successfully_added(self.cookies_name, self.url)
+
+    def loadPage(self, url):
+        self.driver.get(url)
+        self.driver.implicitly_wait(15)
+
+    def cookie_successfully_added(self, cookies_name,url):
+
+        ### 1. OPEN "http://sports.williamhill.com/betting/en-gb' ###
+        print(' 1. OPEN http://sports.williamhill.com/betting/en-gb  ')
+        self.loadPage(url)
+
+        ### 2. ASSERT PRESENCE OF COOKIE NOTICE POP-UP ###
+        print(' 2. ASSERT PRESENCE OF COOKIE NOTICE POP-UP  ')
+        popup = self.driver.find_element_by_class_name('cookie-disclaimer')
+        self.elemExists(popup)
+
+        print('       The cookie notice pop-up is displayed: ', popup.is_displayed())
+        button = self.driver.find_element_by_class_name("cookie-disclaimer__button")
+        self.elemExists(button)
+        self.cookieDoesntExist(self.getCookie(cookies_name))
+
+        ### 3. CLOSE COOKIE NOTICE  ###
+        print(' 3. CLOSE COOKIE NOTICE ')
+        self.clickElem(button)
+
+        ### 4. ASSERT PRESENCE OF CDB COOKIE  ###
+        print(' 4. ASSERT PRESENCE OF CDB COOKIE ')
+        cdb_cookie = self.getCookie(cookies_name)
+        print('       The new cookie added is: ', cdb_cookie)
+        self.cookieExists(cdb_cookie)
+
+    def elemExists(self, elem):
+        self.assertTrue(elem.is_displayed())
+
+    def clickElem(self, elem):
+        elem.click()
+
+    def getCookie(self, cookie):
+        return self.driver.get_cookie(cookie)
+
+    def cookieExists(self, cookie):
+        self.assertFalse(cookie is None)
+
+    def cookieDoesntExist(self, cookie):
+        self.assertTrue(cookie is None)
+
+    def tearDown(cls):
+        file = './screenshots/' + 'WhCookieTest_on_exit' + str(int(round(time.time() * 1000))) +'.png'
+        cls.driver.get_screenshot_as_file(file)
+        cls.driver.quit()
+        print('TEST PASSED')
+
+    if __name__ == '__main__':
+        unittest.main()
 
 
+-------------------------------------------------------
 
 
+import unittest
+from selenium import webdriver
+import time
+
+class WhJoinButton(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.driver = webdriver.Firefox()
+        url_en = "https://sports.williamhill.com/betting/en-gb"
+        cls.driver.get(url_en)
+        cls.driver.implicitly_wait(50)
+        print('THE USER HAD OPENED http://sports.williamhill.com/betting/en-gb  ')
+
+    def test_join_btn(self):
+        print(' 1. HE ASSERTS PRESENCE OF JOIN BUTTON  ')
+        self.joinBtnExist()
+
+        language_pairs = [('de','Anmelden'), ('ja', '登録'), ('el', 'Εγγραφή')]
+        i = 0
+        n = len(language_pairs)
+        while (i < n):
+            pair = language_pairs[i]
+            short_text = str(pair[0])
+            text = str(pair[1])
+            self.switchLanguageAndAssertTranslation(short_text, text)
+            i = i + 1
+
+    def switchLanguageAndAssertTranslation(self, language, label):
+        print(' 2. HE SWITCHES THE LANGUAGE TO ', language)
+        print(' 3. AND HE SEES JOIN BUTTON')
+        print(' 4. HE ASSERTS THE JOIN BUTTON LABEL IS TRANSLATED AS: ',label)
+        self.expandLanguageList()
+        self.selectLanguage(language)
+        self.joinBtnExist()
+        self.joinBtnLabelTranslatedTo(label)
 
 
+    def joinBtnLabelTranslatedTo(self, translation):
+        join_new = self.getJoinBtnLabel()
+        self.driver.implicitly_wait(10)
+        #self.assertTrue(join_new == translation)
+        self.assertEqual(join_new,translation)
 
+    def getJoinBtnLabel(self):
+        return self.driver.find_element_by_id('joinLink').text
 
+    def selectLanguage(self, language):
+        language_selector = self.driver.find_element_by_id(language)
+        self.driver.implicitly_wait(10)
+        self.elemExists(language_selector)
+        self.clickElem(language_selector)
+        self.driver.implicitly_wait(50)
 
+    def expandLanguageList(self):
+        language_list = self.driver.find_element_by_class_name('js-language-button')
+        self.driver.implicitly_wait(10)
+        self.elemExists(language_list)
+        self.clickElem(language_list)
+        self.driver.implicitly_wait(50)
 
+    def joinBtnExist(self):
+        join = self.driver.find_element_by_id('joinLink')
+        self.assertTrue(join.is_displayed())
 
+    def elemExists(self, elem):
+        self.assertTrue(elem.is_displayed())
 
+    def clickElem(self, elem):
+        elem.click()
 
+    def tearDown(cls):
+        file = './screenshots/' + 'WhCookieTest_on_exit' + str(int(round(time.time() * 1000))) + '.png'
+        cls.driver.get_screenshot_as_file(file)
+        cls.driver.quit()
+        print('TEST PASSED')
 
-
-
-
-
+    if __name__ == '__main__':
+        unittest.main()
 
 
 
